@@ -1,0 +1,559 @@
+// oMarketing database schema. Every tenant-owned table carries `shopId`
+// and every query in the app filters by it (see src/lib/tenant.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Users & auth ─────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String?   @unique
+  passwordHash     String?
+  name             String
+  telegramId       BigInt?   @unique
+  telegramUsername String?
+  // Chat with the platform notifier bot where order/payment alerts go.
+  notifyChatId     BigInt?
+  role             UserRole  @default(USER)
+  locale           String    @default("uz")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  sessions         Session[]
+  shops            Shop[]
+  linkTokens       LinkToken[]
+}
+
+model Session {
+  // sha256 of the cookie token — the raw token never touches the DB.
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// One-time token used to link a seller's Telegram chat to the notifier bot.
+model LinkToken {
+  token     String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// ───────────────────────────── Shops & billing ─────────────────────────────
+
+enum ShopStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  EXPIRED
+}
+
+model Plan {
+  id             String          @id @default(cuid())
+  code           String          @unique
+  name           String
+  priceUzs       Int
+  monthlyReplies Int
+  instagram      Boolean         @default(false)
+  webWidget      Boolean         @default(false)
+  active         Boolean         @default(true)
+  sortOrder      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  shops          Shop[]
+  invoices       BillingInvoice[]
+}
+
+model Shop {
+  id                  String             @id @default(cuid())
+  ownerId             String
+  owner               User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                String
+  slug                String             @unique
+  // Public identifier used by the embeddable web widget.
+  publicKey           String             @unique
+  status              ShopStatus         @default(ACTIVE)
+  isDemo              Boolean            @default(false)
+  onboardingStep      Int                @default(0)
+  onboardingCompleted Boolean            @default(false)
+
+  // AI settings injected into the system prompt.
+  aiEnabled           Boolean            @default(true)
+  toneOfVoice         String             @default("")
+  greeting            String             @default("")
+  workingHours        String             @default("")
+  deliveryZones       Json               @default("[]")
+  pickupAddress       String             @default("")
+  returnPolicy        String             @default("")
+  faq                 Json               @default("[]")
+  extraInstructions   String             @default("")
+
+  // SaaS subscription.
+  planId              String?
+  plan                Plan?              @relation(fields: [planId], references: [id])
+  subscriptionStatus  SubscriptionStatus @default(TRIALING)
+  trialEndsAt         DateTime
+  currentPeriodEnd    DateTime?
+
+  // Referral program.
+  referralCode        String             @unique
+  referredById        String?
+  referredBy          Shop?              @relation("Referrals", fields: [referredById], references: [id])
+  referrals           Shop[]             @relation("Referrals")
+  referralRewardedAt  DateTime?
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  products            Product[]
+  productImages       ProductImage[]
+  channels            Channel[]
+  customers           Customer[]
+  conversations       Conversation[]
+  messages            Message[]
+  orders              Order[]
+  paymentConfig       ShopPaymentConfig?
+  toolCalls           AiToolCall[]
+  usage               AiUsage[]
+  usageCounters       UsageCounter[]
+  invoices            BillingInvoice[]
+  businessConnections BusinessConnection[]
+
+  @@index([ownerId])
+}
+
+model BillingInvoice {
+  id        String        @id @default(cuid())
+  shopId    String
+  shop      Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  planId    String
+  plan      Plan          @relation(fields: [planId], references: [id])
+  months    Int           @default(1)
+  amount    Int
+  status    InvoiceStatus @default(PENDING)
+  provider  String?
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([shopId, createdAt])
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+model UsageCounter {
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  // YYYY-MM in Asia/Tashkent
+  period    String
+  aiReplies Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@id([shopId, period])
+}
+
+model PlatformSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ───────────────────────────── Catalog ─────────────────────────────
+
+model Product {
+  id          String           @id @default(cuid())
+  shopId      String
+  shop        Shop             @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  name        String
+  description String           @default("")
+  price       Int
+  category    String           @default("")
+  sku         String?
+  stock       Int              @default(0)
+  active      Boolean          @default(true)
+  // Lower-cased, Cyrillic→Latin transliterated text used by search_products.
+  searchText  String           @default("")
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  variants    ProductVariant[]
+  images      ProductImage[]
+  orderItems  OrderItem[]
+
+  @@index([shopId, active])
+  @@index([shopId, category])
+}
+
+model ProductVariant {
+  id        String      @id @default(cuid())
+  productId String
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size      String      @default("")
+  color     String      @default("")
+  // Overrides product price when set.
+  price     Int?
+  stock     Int         @default(0)
+  sku       String?
+  orderItems OrderItem[]
+
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  // Either an external URL or bytes stored in the DB (served by /api/media/[id]).
+  url       String?
+  data      Bytes?
+  mimeType  String   @default("image/jpeg")
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([productId, position])
+}
+
+// ───────────────────────────── Channels ─────────────────────────────
+
+enum ChannelType {
+  TELEGRAM_BOT
+  INSTAGRAM
+}
+
+enum ChannelStatus {
+  ACTIVE
+  DISCONNECTED
+  ERROR
+}
+
+model Channel {
+  id                String               @id @default(cuid())
+  shopId            String
+  shop              Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  type              ChannelType
+  status            ChannelStatus        @default(ACTIVE)
+  // Telegram bot id / Instagram professional account id.
+  externalId        String
+  username          String?
+  displayName       String?
+  encryptedToken    String
+  // sha256 of the Telegram webhook secret_token.
+  webhookSecretHash String?
+  tokenExpiresAt    DateTime?
+  lastError         String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  conversations     Conversation[]
+  businessConnections BusinessConnection[]
+
+  @@unique([type, externalId])
+  @@index([shopId])
+}
+
+model BusinessConnection {
+  // Telegram business_connection_id
+  id         String   @id
+  channelId  String
+  channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  // Telegram user id of the seller's personal account.
+  userId     BigInt
+  userChatId BigInt
+  canReply   Boolean
+  isEnabled  Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([shopId])
+}
+
+// Dedupe table for webhook deliveries (Telegram retries, Meta retries).
+model ProcessedUpdate {
+  id        String   @id
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ───────────────────────────── Conversations ─────────────────────────────
+
+enum ConversationChannel {
+  TELEGRAM
+  TELEGRAM_BUSINESS
+  INSTAGRAM
+  WEB_WIDGET
+  PLAYGROUND
+  DEMO
+}
+
+model Customer {
+  id            String              @id @default(cuid())
+  shopId        String
+  shop          Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  channel       ConversationChannel
+  externalId    String
+  name          String              @default("")
+  username      String?
+  phone         String?
+  address       String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  conversations Conversation[]
+  orders        Order[]
+
+  @@unique([shopId, channel, externalId])
+}
+
+model Conversation {
+  id                   String              @id @default(cuid())
+  shopId               String
+  shop                 Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  channelId            String?
+  channelRef           Channel?            @relation(fields: [channelId], references: [id], onDelete: SetNull)
+  channel              ConversationChannel
+  customerId           String
+  customer             Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  // Telegram chat id / Instagram sender id / widget visitor id.
+  externalChatId       String
+  businessConnectionId String?
+  aiPaused             Boolean             @default(false)
+  tags                 String[]            @default([])
+  // Rolling summary of messages older than the last 20.
+  summary              String              @default("")
+  summarizedCount      Int                 @default(0)
+  messageCount         Int                 @default(0)
+  unread               Int                 @default(0)
+  lastMessageAt        DateTime            @default(now())
+  lastMessagePreview   String              @default("")
+  createdAt            DateTime            @default(now())
+  messages             Message[]
+  orders               Order[]
+  toolCalls            AiToolCall[]
+
+  @@unique([shopId, channel, externalChatId])
+  @@index([shopId, lastMessageAt])
+}
+
+enum MessageRole {
+  CUSTOMER
+  AI
+  SELLER
+  SYSTEM
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  shopId         String
+  shop           Shop         @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  text           String
+  // Product cards / photos shown with the message, and tool call summaries.
+  attachments    Json?
+  externalId     String?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([shopId, createdAt])
+}
+
+model AiToolCall {
+  id             String        @id @default(cuid())
+  shopId         String
+  shop           Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  name           String
+  input          Json
+  output         Json
+  isError        Boolean       @default(false)
+  durationMs     Int
+  createdAt      DateTime      @default(now())
+
+  @@index([shopId, createdAt])
+  @@index([shopId, name])
+}
+
+model AiUsage {
+  id                  String   @id @default(cuid())
+  shopId              String
+  shop                Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  conversationId      String?
+  model               String
+  inputTokens         Int
+  outputTokens        Int
+  cacheReadTokens     Int      @default(0)
+  cacheCreationTokens Int      @default(0)
+  // Estimated cost in micro-USD (1e-6 USD).
+  costMicroUsd        Int      @default(0)
+  createdAt           DateTime @default(now())
+
+  @@index([shopId, createdAt])
+  @@index([createdAt])
+}
+
+// ───────────────────────────── Orders & payments ─────────────────────────────
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryType {
+  DELIVERY
+  PICKUP
+}
+
+model Order {
+  id                String              @id @default(cuid())
+  shopId            String
+  shop              Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  number            Int
+  customerId        String?
+  customer          Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  conversationId    String?
+  conversation      Conversation?       @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  source            ConversationChannel
+  status            OrderStatus         @default(NEW)
+  customerName      String
+  phone             String
+  deliveryType      DeliveryType
+  deliveryAddress   String              @default("")
+  deliveryZone      String              @default("")
+  deliveryPrice     Int                 @default(0)
+  subtotal          Int
+  total             Int
+  note              String              @default("")
+  commissionPercent Float               @default(0)
+  commissionAmount  Int                 @default(0)
+  paymentProvider   String?
+  paidAt            DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  items             OrderItem[]
+
+  @@unique([shopId, number])
+  @@index([shopId, createdAt])
+  @@index([shopId, status])
+}
+
+model OrderItem {
+  id           String          @id @default(cuid())
+  orderId      String
+  order        Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String?
+  product      Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variantId    String?
+  variant      ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  name         String
+  variantLabel String          @default("")
+  unitPrice    Int
+  quantity     Int
+  lineTotal    Int
+}
+
+model ShopPaymentConfig {
+  shopId            String   @id
+  shop              Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  paymeEnabled      Boolean  @default(false)
+  paymeMerchantId   String?
+  paymeKeyEnc       String?
+  paymeTestMode     Boolean  @default(true)
+  clickEnabled      Boolean  @default(false)
+  clickServiceId    String?
+  clickMerchantId   String?
+  clickSecretKeyEnc String?
+  updatedAt         DateTime @updatedAt
+}
+
+// Payme Merchant API transactions. `scope` is "shop:<shopId>" for customer
+// payments or "platform" for SaaS subscription payments.
+model PaymeTransaction {
+  id          String    @id @default(cuid())
+  scope       String
+  paymeId     String
+  paymeTime   BigInt
+  amount      BigInt
+  account     Json
+  orderId     String?
+  invoiceId   String?
+  state       Int
+  reason      Int?
+  createTime  BigInt
+  performTime BigInt    @default(0)
+  cancelTime  BigInt    @default(0)
+  createdAt   DateTime  @default(now())
+
+  @@unique([scope, paymeId])
+  @@index([scope, paymeTime])
+  @@index([orderId])
+  @@index([invoiceId])
+}
+
+enum ClickStatus {
+  PREPARED
+  COMPLETED
+  CANCELLED
+}
+
+model ClickTransaction {
+  // merchant_prepare_id / merchant_confirm_id
+  id              Int         @id @default(autoincrement())
+  scope           String
+  clickTransId    BigInt
+  clickPaydocId   BigInt?
+  serviceId       String
+  merchantTransId String
+  amount          String
+  status          ClickStatus @default(PREPARED)
+  orderId         String?
+  invoiceId       String?
+  createdAt       DateTime    @default(now())
+  completedAt     DateTime?
+
+  @@unique([scope, clickTransId])
+  @@index([merchantTransId])
+}
+
+// ───────────────────────────── Infra ─────────────────────────────
+
+model RateLimit {
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@id([key, windowStart])
+  @@index([windowStart])
+}
