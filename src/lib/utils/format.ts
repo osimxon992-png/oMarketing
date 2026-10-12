@@ -41,3 +41,9 @@ export function currentPeriod(now = new Date()): string {
   const m = parts.find((p) => p.type === "month")?.value;
   return `${y}-${m}`;
 }
+
+/** Micro-dollars (AiUsage.costMicroUsd) as USD; sub-dollar amounts keep 4 decimals. */
+export function formatUsd(micro: number): string {
+  const usd = micro / 1_000_000;
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: usd > 0 && usd < 1 ? 4 : 2 }).format(usd);
+}

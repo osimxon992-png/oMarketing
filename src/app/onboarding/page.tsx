@@ -3,7 +3,7 @@ import { getCurrentShop, requireUser } from "@/lib/auth/session";
 import { getDict } from "@/lib/i18n/server";
 import { getSetupStatus } from "@/lib/onboarding";
 import { Logo } from "@/components/logo";
-import { LanguageSwitch, ThemeToggle } from "@/components/preferences";
+import { LanguageSwitch } from "@/components/preferences";
 import { CreateShopForm, OnboardingSteps } from "./wizard";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,6 @@ export default async function OnboardingPage() {
         <Logo href={shop ? "/dashboard" : "/"} />
         <div className="flex items-center gap-2">
           <LanguageSwitch />
-          <ThemeToggle />
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 pb-16">

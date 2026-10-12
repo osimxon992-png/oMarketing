@@ -16,26 +16,26 @@ export function PanelPreview({ t, locale }: { t: LandingDict["panel"]["mock"]; l
   const statusLabel = { paid: t.paid, delivering: t.delivering, new: t.new };
 
   return (
-    <div className="glass edge-glow overflow-hidden !rounded-[28px] p-2 text-left">
+    <div className="glass-strong overflow-hidden !rounded-[28px] p-2 text-left">
       <div className="flex items-center gap-1.5 px-3 py-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-fg/25" />
-        <span className="h-2.5 w-2.5 rounded-full bg-fg/25" />
-        <span className="h-2.5 w-2.5 rounded-full bg-fg/25" />
-        <span className="ml-3 rounded-full border border-line px-3 py-0.5 font-mono text-[11px] text-subtle">/dashboard</span>
+        <span className="h-2.5 w-2.5 rounded-full bg-anor" />
+        <span className="h-2.5 w-2.5 rounded-full bg-mango" />
+        <span className="h-2.5 w-2.5 rounded-full bg-lime" />
+        <span className="ml-3 rounded-[8px] bg-paper px-3 py-0.5 font-mono text-[11px] text-muted shadow-[inset_0_2px_3px_rgba(90,64,24,0.14)]">/dashboard</span>
       </div>
 
-      <div className="grid gap-2 rounded-[22px] border border-line bg-glass p-3 sm:grid-cols-[150px_1fr] sm:p-4">
+      <div className="grid gap-2 rounded-[22px] bg-paper p-3 sm:grid-cols-[150px_1fr] sm:p-4">
         <aside className="hidden flex-col gap-1 sm:flex">
           {[ShoppingBag, Bot, Package, Wallet].map((Icon, i) => (
             <span
               key={i}
               className={cn(
                 "flex items-center gap-2 rounded-xl px-2.5 py-2",
-                i === 0 ? "bg-fg text-page" : "text-subtle",
+                i === 0 ? "clay-btn bg-leaf text-paper-hi" : "text-subtle",
               )}
             >
               <Icon className="h-3.5 w-3.5" />
-              <span className={cn("h-1.5 rounded-full", i === 0 ? "w-14 bg-page/50" : "w-12 bg-fg/15")} />
+              <span className={cn("h-1.5 rounded-full", i === 0 ? "w-14 bg-paper-hi/60" : "w-12 bg-fg/15")} />
             </span>
           ))}
         </aside>
@@ -48,14 +48,14 @@ export function PanelPreview({ t, locale }: { t: LandingDict["panel"]["mock"]; l
               { label: t.replies, value: "348" },
               { label: t.revenue, value: "8,4M" },
             ].map((s) => (
-              <div key={s.label} className="rounded-2xl border border-line bg-glass-strong p-2.5 sm:p-3">
+              <div key={s.label} className="glass !rounded-2xl p-2.5 sm:p-3">
                 <p className="truncate text-[11px] text-subtle">{s.label}</p>
                 <p className="mt-1 font-mono text-lg font-semibold text-fg sm:text-xl">{s.value}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-2 rounded-2xl border border-line bg-glass-strong p-3">
+          <div className="glass mt-2 !rounded-2xl p-3">
             <div className="mb-2 flex items-center justify-between text-[11px] text-subtle">
               <span>{t.replies}</span>
               <TrendingUp className="h-3.5 w-3.5" />
@@ -64,14 +64,14 @@ export function PanelPreview({ t, locale }: { t: LandingDict["panel"]["mock"]; l
               {BARS.map((h, i) => (
                 <span
                   key={i}
-                  className={cn("flex-1 rounded-t-md", i === BARS.length - 1 ? "bg-fg" : "bg-fg/20")}
+                  className={cn("flex-1 rounded-t-md", i === BARS.length - 1 ? "bg-guava" : "bg-leaf/70")}
                   style={{ height: `${h}%` }}
                 />
               ))}
             </div>
           </div>
 
-          <div className="mt-2 rounded-2xl border border-line bg-glass-strong p-3">
+          <div className="glass mt-2 !rounded-2xl p-3">
             <p className="mb-2 text-[11px] text-subtle">{t.recent}</p>
             <ul className="divide-y divide-[var(--glass-border)]">
               {orders.map((o) => (
@@ -82,7 +82,7 @@ export function PanelPreview({ t, locale }: { t: LandingDict["panel"]["mock"]; l
                   <span
                     className={cn(
                       "rounded-full border px-2 py-0.5 text-[10px] font-medium",
-                      o.status === "paid" ? "border-fg bg-fg text-page" : "border-line text-muted",
+                      o.status === "paid" ? "border-transparent bg-lime text-charcoal" : "border-line text-muted",
                     )}
                   >
                     {statusLabel[o.status]}

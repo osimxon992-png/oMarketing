@@ -55,12 +55,6 @@ export async function requireUser() {
   return user;
 }
 
-export async function requireAdmin() {
-  const user = await requireUser();
-  if (user.role !== "ADMIN") redirect("/dashboard");
-  return user;
-}
-
 /** The shop the current user is working in (owner-scoped). Null if they have none yet. */
 export const getCurrentShop = cache(async () => {
   const user = await getCurrentUser();

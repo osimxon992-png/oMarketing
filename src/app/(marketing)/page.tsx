@@ -13,7 +13,7 @@ export default async function HomePage() {
       <Stats stats={t.stats} />
       <Problem t={t.problem} />
       <Explore t={t.explore} />
-      <Industries t={t.industries} index="03" />
+      <Industries t={t.industries} />
       <CtaBand t={t.cta} signedIn={signedIn} dashboardLabel={t.nav.dashboard} />
     </>
   );

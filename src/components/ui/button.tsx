@@ -11,23 +11,22 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-accent text-accent-fg border border-accent shadow-[0_8px_30px_-8px_color-mix(in_srgb,var(--fg)_45%,transparent)] hover:bg-accent-strong hover:shadow-[0_10px_40px_-6px_color-mix(in_srgb,var(--fg)_60%,transparent)]",
-  secondary: "glass text-fg hover:bg-glass-strong",
-  ghost: "text-fg hover:bg-glass",
-  danger: "bg-danger text-page hover:brightness-110 border border-danger",
+  primary: "clay-btn bg-accent text-accent-fg hover:bg-accent-strong",
+  secondary: "clay-btn bg-paper-hi text-fg",
+  ghost: "text-fg transition-colors duration-200 hover:bg-charcoal/[0.06]",
+  danger: "clay-btn bg-danger text-paper-hi",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-8 px-3.5 text-sm rounded-full gap-1.5",
-  md: "h-10 px-5 text-sm rounded-full gap-2",
-  lg: "h-12 px-7 text-base rounded-full gap-2",
+  sm: "h-8 px-3.5 text-sm rounded-[11px] gap-1.5",
+  md: "h-10 px-5 text-sm rounded-[13px] gap-2",
+  lg: "h-12 px-7 text-base rounded-[15px] gap-2",
 };
 
 export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
   return cn(
-    "inline-flex items-center justify-center font-medium whitespace-nowrap transition-all duration-200 select-none",
-    "active:scale-[0.98] disabled:opacity-55 disabled:cursor-not-allowed disabled:active:scale-100",
+    "inline-flex items-center justify-center font-semibold whitespace-nowrap select-none",
+    "disabled:opacity-55 disabled:cursor-not-allowed",
     variants[variant],
     sizes[size],
     className,

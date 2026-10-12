@@ -20,8 +20,6 @@ const schema = z.object({
   ANTHROPIC_API_KEY: optional,
   AI_MODEL: optional.transform((v) => v ?? "claude-sonnet-5-5"),
   AI_SUMMARY_MODEL: optional.transform((v) => v ?? "claude-haiku-5-5"),
-  // Model behind the dashboard business assistant (answers the owner's questions about their shop).
-  AI_ASSISTANT_MODEL: optional.transform((v) => v ?? "claude-opus-5-5"),
   AI_EFFORT: optional.transform((v) => (v === "medium" || v === "high" ? v : "low") as "low" | "medium" | "high"),
 
   PLATFORM_BOT_TOKEN: optional,
@@ -40,13 +38,11 @@ const schema = z.object({
   PLATFORM_CLICK_MERCHANT_ID: optional,
   PLATFORM_CLICK_SECRET_KEY: optional,
 
-  DEMO_SHOP_SLUG: optional.transform((v) => v ?? "demo-kiyim"),
-  ADMIN_EMAILS: optional.transform((v) =>
-    (v ?? "")
-      .split(",")
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean),
-  ),
+  // Telegram username that subscription payments are arranged with (opens a chat on "Pay").
+  PLATFORM_PAY_TELEGRAM: optional.transform((v) => (v ?? "osimxon_00").replace(/^@/, "")),
+  // Owner-only /admin panel. Left empty (or too short), the panel stays locked; the rest of the site is unaffected.
+  ADMIN_LOGIN: optional,
+  ADMIN_PASSWORD: optional,
   CRON_SECRET: optional,
 });
 

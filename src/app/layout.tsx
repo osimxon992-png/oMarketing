@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Onest } from "next/font/google";
-import { cookies } from "next/headers";
+import { Dela_Gothic_One, JetBrains_Mono, Onest } from "next/font/google";
 import "./globals.css";
 import { getDict } from "@/lib/i18n/server";
 import { I18nProvider } from "@/lib/i18n/client";
@@ -8,6 +7,7 @@ import { ToastProvider } from "@/components/ui/toast";
 
 const onest = Onest({ subsets: ["latin", "cyrillic"], variable: "--font-onest", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], variable: "--font-mono-jb", display: "swap" });
+const dela = Dela_Gothic_One({ weight: "400", subsets: ["latin", "cyrillic"], variable: "--font-dela", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "oMarketing — Telegram va Instagram do'konlar uchun AI sotuvchi", template: "%s · oMarketing" },
@@ -18,22 +18,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#070707",
+  themeColor: "#1f5a2e",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { locale, t } = await getDict();
-  const theme = (await cookies()).get("sotuv_theme")?.value === "light" ? "light" : "dark";
   return (
-    <html lang={locale} className={`${theme} ${onest.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${onest.variable} ${mono.variable} ${dela.variable}`}>
       <body className="min-h-screen antialiased">
-        <div className="scene" aria-hidden="true">
-          <div className="scene-orb o1" />
-          <div className="scene-orb o2" />
-          <div className="scene-orb o3" />
-          <div className="scene-grid" />
-          <div className="scene-grain" />
-        </div>
+        <div className="scene" aria-hidden="true" />
         <I18nProvider locale={locale} t={t}>
           <ToastProvider>{children}</ToastProvider>
         </I18nProvider>

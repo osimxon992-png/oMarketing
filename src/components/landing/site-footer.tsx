@@ -2,6 +2,14 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import type { LandingDict } from "@/lib/i18n/landing";
 
+// The brand broken into syllables and pasted as slabs: the page's closing poster.
+const SYLLABLES = [
+  { text: "o", bg: "var(--paper-hi)", tilt: -6 },
+  { text: "MAR", bg: "var(--mango)", tilt: 3 },
+  { text: "KE", bg: "var(--flor)", tilt: -2 },
+  { text: "TING", bg: "var(--lime)", tilt: 4 },
+];
+
 export function SiteFooter({ t }: { t: LandingDict }) {
   const columns = [
     {
@@ -23,19 +31,19 @@ export function SiteFooter({ t }: { t: LandingDict }) {
   ];
 
   return (
-    <footer className="border-t border-line">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
+    <footer className="paint-field mt-10 overflow-hidden rounded-t-[44px]">
+      <div className="mx-auto grid max-w-6xl gap-12 px-4 pt-16 pb-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
         <div>
-          <Logo />
-          <p className="mt-4 max-w-xs text-sm text-muted">{t.footer.tagline}</p>
+          <Logo onDark />
+          <p className="mt-4 max-w-xs text-sm font-medium text-paper-hi/90">{t.footer.tagline}</p>
         </div>
         {columns.map((col) => (
           <div key={col.title}>
-            <p className="font-mono text-xs tracking-[0.2em] text-subtle uppercase">{col.title}</p>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <p className="slab text-xs font-bold tracking-wide uppercase [--slab:var(--lime)] [--tilt:-2deg]">{col.title}</p>
+            <ul className="mt-5 space-y-2.5 text-sm font-medium">
               {col.links.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-muted transition hover:text-fg">
+                  <Link href={l.href} className="text-paper-hi underline-offset-4 transition hover:underline">
                     {l.label}
                   </Link>
                 </li>
@@ -44,18 +52,21 @@ export function SiteFooter({ t }: { t: LandingDict }) {
           </div>
         ))}
       </div>
-      <div className="mx-auto flex max-w-6xl flex-col gap-2 border-t border-line px-4 py-6 text-xs text-subtle sm:flex-row sm:justify-between sm:px-6">
+
+      <p className="flex flex-wrap items-end justify-center gap-x-[1.5vw] px-4 pb-6 font-display text-[clamp(3rem,10.5vw,9rem)] leading-[0.95] select-none" aria-hidden="true">
+        {SYLLABLES.map((s) => (
+          <span key={s.text} className="slab" style={{ "--slab": s.bg, "--tilt": `${s.tilt}deg` } as React.CSSProperties}>
+            {s.text}
+          </span>
+        ))}
+      </p>
+
+      <div className="mx-auto flex max-w-6xl flex-col gap-2 border-t border-paper-hi/20 px-4 py-6 text-xs font-medium text-paper-hi/85 sm:flex-row sm:justify-between sm:px-6">
         <p>
           © {new Date().getFullYear()} oMarketing. {t.footer.rights}
         </p>
         <p className="font-mono">Telegram · Instagram · Payme · Click</p>
       </div>
-      <p
-        className="pointer-events-none overflow-hidden text-center text-[15vw] leading-[0.8] font-semibold tracking-[-0.06em] text-transparent select-none [-webkit-text-stroke:1px_var(--glass-border)]"
-        aria-hidden="true"
-      >
-        oMarketing
-      </p>
     </footer>
   );
 }

@@ -99,8 +99,8 @@ export function AuthForm({
   };
 
   return (
-    <div className="glass-strong edge-glow fade-in w-full max-w-[440px] !rounded-[28px] p-6 sm:p-9">
-      <h1 className="text-[1.7rem] leading-tight font-semibold tracking-[-0.02em] text-fg sm:text-3xl">
+    <div className="glass-strong fade-in w-full max-w-[440px] !rounded-[28px] p-6 sm:p-9">
+      <h1 className="font-display text-[1.7rem] leading-tight tracking-[-0.01em] text-fg sm:text-3xl">
         {mode === "login" ? t.auth.loginTitle : t.auth.registerTitle}
       </h1>
       <p className="mt-2 text-sm text-muted">{mode === "login" ? t.auth.loginSubtitle : t.auth.registerSubtitle}</p>

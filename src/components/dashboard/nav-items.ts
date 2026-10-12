@@ -7,7 +7,6 @@ import {
   MessagesSquare,
   Package,
   Radio,
-  Receipt,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -30,4 +29,3 @@ export const NAV_ITEMS = [
   { href: "/dashboard/settings", key: "settings", icon: Settings },
 ] as const satisfies readonly { href: string; key: keyof Dict["nav"]; icon: unknown }[];
 
-export const ADMIN_ITEM = { href: "/admin", key: "admin", icon: Receipt } as const;

@@ -13,13 +13,10 @@
     "db:local": "tsx scripts/local-postgres.ts",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "telegram:set-notifier-webhook": "tsx scripts/set-notifier-webhook.ts",
+    "telegram:notifier-poll": "tsx scripts/notifier-poll.ts",
     "postinstall": "prisma generate"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "engines": {
     "node": ">=20.9"
@@ -28,6 +25,8 @@
     "@anthropic-ai/sdk": "^0.133.0",
     "@node-rs/argon2": "^2.2.2",
     "@prisma/client": "^6.19.3",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
     "clsx": "^2.1.1",
     "grammy": "^1.46.0",
     "lucide-react": "^1.55.0",
@@ -36,8 +35,10 @@
     "pg": "^8.23.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "react-is": "^19.3.0",
     "recharts": "^3.10.1",
     "server-only": "^0.0.1",
+    "three": "^0.186.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^4.6.5"
   },
@@ -48,6 +49,7 @@
     "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
     "dotenv": "^18.0.7",
     "embedded-postgres": "^17.10.0-beta.17",
     "postcss": "^8.5.29",

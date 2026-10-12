@@ -4,7 +4,6 @@ import { Alert } from "@/components/ui/card";
 import { buttonClass } from "@/components/ui/button";
 import { requireShop } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { features } from "@/lib/env";
 import { getDict } from "@/lib/i18n/server";
 import { getEntitlements, getMonthlyUsage } from "@/lib/shop";
 import { formatDate } from "@/lib/utils/format";
@@ -19,7 +18,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     getMonthlyUsage(shop.id),
     db.conversation.count({ where: { shopId: shop.id, unread: { gt: 0 } } }),
   ]);
-  const f = features();
 
   const banners: React.ReactNode[] = [];
   if (ent.reason === "suspended") banners.push(<Alert key="s" tone="danger">{t.dashboard.suspended}</Alert>);
@@ -41,13 +39,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {t.dashboard.quotaExceeded}
       </Alert>,
     );
-  if (!f.ai) banners.push(<Alert key="ai" tone="info">{t.dashboard.aiNotConfigured}</Alert>);
 
   return (
     <DashboardShell
       shopName={shop.name}
       userName={user.name}
-      isAdmin={user.role === "ADMIN"}
       inboxUnread={unread}
       banner={banners.length ? banners : undefined}
     >

@@ -10,3 +10,7 @@ coverage
 next-env.d.ts
 npm-debug.log*
 *.log
+
+# impeccable working files (screenshots, decision sketches, downloaded references)
+.impeccable/mocks/
+.impeccable/review/

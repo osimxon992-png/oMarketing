@@ -13,9 +13,9 @@ export default async function PricingPage() {
   const [plans, signedIn] = await Promise.all([loadPlans(), isSignedIn()]);
   return (
     <>
-      <PageHero eyebrow={t.pages.pricing.title} title={t.pages.pricing.heading} subtitle={t.pages.pricing.subtitle} />
+      <PageHero eyebrow={t.pages.pricing.title} title={t.pages.pricing.heading} subtitle={t.pages.pricing.subtitle} homeLabel={t.nav.home} />
       <PricingPlans t={t.pricing} plans={plans} locale={locale} />
-      <Compare t={t.compare} minPrice={Math.min(...plans.map((p) => p.priceUzs))} locale={locale} index="01" />
+      <Compare t={t.compare} minPrice={Math.min(...plans.map((p) => p.priceUzs))} locale={locale} />
       <CtaBand t={t.cta} signedIn={signedIn} dashboardLabel={t.nav.dashboard} />
     </>
   );

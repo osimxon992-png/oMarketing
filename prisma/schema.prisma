@@ -348,6 +348,8 @@ model Conversation {
   // Rolling summary of messages older than the last 20.
   summary              String              @default("")
   summarizedCount      Int                 @default(0)
+  // Rule-based seller bot state: current order step and collected answers.
+  botState             Json                @default("{}")
   messageCount         Int                 @default(0)
   unread               Int                 @default(0)
   lastMessageAt        DateTime            @default(now())

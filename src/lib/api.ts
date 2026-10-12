@@ -1,5 +1,6 @@
 import "server-only";
 import { z } from "zod";
+import { isAdmin } from "@/lib/auth/admin";
 import { getCurrentShop, getCurrentUser } from "@/lib/auth/session";
 
 export class ApiError extends Error {
@@ -38,6 +39,8 @@ export function handler<A extends unknown[]>(fn: (...args: A) => Promise<Respons
       return await fn(...args);
     } catch (err) {
       if (err instanceof ApiError) return jsonError(err.status, err.code, err.message, err.details);
+      // A schema `.parse()` on user input (e.g. query params) is a client error, not a crash.
+      if (err instanceof z.ZodError) return jsonError(422, "validation_error", "Validation failed", z.flattenError(err));
       console.error("[api] unhandled error:", err instanceof Error ? err.message : err);
       return jsonError(500, "internal_error", "Internal server error");
     }
@@ -59,7 +62,5 @@ export async function requireApiShop() {
 }
 
 export async function requireApiAdmin() {
-  const user = await requireApiUser();
-  if (user.role !== "ADMIN") throw new ApiError(403, "forbidden");
-  return user;
+  if (!(await isAdmin())) throw new ApiError(401, "unauthorized");
 }

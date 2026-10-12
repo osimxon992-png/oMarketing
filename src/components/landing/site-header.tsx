@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { LanguageSwitch, ThemeToggle } from "@/components/preferences";
+import { LanguageSwitch } from "@/components/preferences";
 import { buttonClass } from "@/components/ui/button";
 import type { LandingDict } from "@/lib/i18n/landing";
 import { cn } from "@/lib/utils/cn";
@@ -42,8 +42,8 @@ export function SiteHeader({ t, signedIn }: { t: LandingDict["nav"]; signedIn: b
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4">
       <div
         className={cn(
-          "mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 rounded-full px-3 pl-4 transition-all duration-300 sm:pl-5",
-          scrolled || open ? "glass-strong !rounded-full" : "border border-transparent",
+          "glass-strong mx-auto flex h-16 max-w-6xl -rotate-[0.4deg] items-center justify-between gap-3 !rounded-[18px] px-3 pl-4 transition-shadow duration-300 sm:pl-5",
+          scrolled || open ? "shadow-[var(--clay-bevel),var(--clay-cast-lifted)]" : "",
         )}
       >
         <Logo />
@@ -55,8 +55,8 @@ export function SiteHeader({ t, signedIn }: { t: LandingDict["nav"]; signedIn: b
               href={l.href}
               aria-current={isActive(l.href) ? "page" : undefined}
               className={cn(
-                "rounded-full px-3.5 py-2 text-sm transition",
-                isActive(l.href) ? "bg-glass-strong font-medium text-fg" : "text-muted hover:bg-glass-strong hover:text-fg",
+                "rounded-[10px] px-3.5 py-2 text-sm font-semibold transition",
+                isActive(l.href) ? "clay-btn bg-lime text-charcoal" : "text-fg hover:bg-charcoal/[0.06]",
               )}
             >
               {l.label}
@@ -66,25 +66,24 @@ export function SiteHeader({ t, signedIn }: { t: LandingDict["nav"]; signedIn: b
 
         <div className="flex items-center gap-1.5">
           <LanguageSwitch className="max-sm:hidden" />
-          <ThemeToggle />
           {signedIn ? (
-            <Link href="/dashboard" className={buttonClass("primary", "sm", "max-sm:hidden")}>
+            <Link href="/dashboard" className={buttonClass("primary", "md", "max-sm:hidden")}>
               {t.dashboard}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           ) : (
             <>
-              <Link href="/login" className={buttonClass("ghost", "sm", "max-md:hidden")}>
+              <Link href="/login" className={buttonClass("ghost", "md", "max-md:hidden")}>
                 {t.login}
               </Link>
-              <Link href="/register" className={buttonClass("primary", "sm", "max-sm:hidden")}>
+              <Link href="/register" className="clay-btn inline-flex h-10 items-center rounded-[13px] bg-mango px-5 text-sm font-bold text-charcoal max-sm:hidden">
                 {t.start}
               </Link>
             </>
           )}
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-fg transition hover:bg-glass-strong lg:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-fg transition hover:bg-charcoal/[0.06] lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -96,7 +95,7 @@ export function SiteHeader({ t, signedIn }: { t: LandingDict["nav"]; signedIn: b
       </div>
 
       {open && (
-        <div id="mobile-nav" className="glass-strong fade-in mx-auto mt-2 max-w-6xl p-3 lg:hidden">
+        <div id="mobile-nav" className="glass-strong fade-in mx-auto mt-2 max-w-6xl rotate-[0.3deg] p-3 lg:hidden">
           <nav aria-label={t.menu} className="flex flex-col">
             {[{ href: "/", label: t.home }, ...links].map((l) => (
               <Link
@@ -104,8 +103,8 @@ export function SiteHeader({ t, signedIn }: { t: LandingDict["nav"]; signedIn: b
                 href={l.href}
                 aria-current={isActive(l.href) ? "page" : undefined}
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-base text-fg transition hover:bg-glass-strong",
-                  isActive(l.href) && "bg-glass-strong font-medium",
+                  "rounded-[12px] px-4 py-3 text-base font-semibold text-fg transition hover:bg-charcoal/[0.06]",
+                  isActive(l.href) && "clay-btn bg-lime text-charcoal",
                 )}
               >
                 {l.label}

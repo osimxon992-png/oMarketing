@@ -13,7 +13,7 @@ export default async function FaqPage() {
   const signedIn = await isSignedIn();
   return (
     <>
-      <PageHero eyebrow={t.pages.faq.title} title={t.pages.faq.heading} subtitle={t.pages.faq.subtitle} />
+      <PageHero eyebrow={t.pages.faq.title} title={t.pages.faq.heading} subtitle={t.pages.faq.subtitle} homeLabel={t.nav.home} />
       <FaqList items={t.faq.items} />
       <CtaBand t={t.cta} signedIn={signedIn} dashboardLabel={t.nav.dashboard} />
     </>

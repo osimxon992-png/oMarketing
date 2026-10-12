@@ -13,10 +13,10 @@ export default async function FeaturesPage() {
   const signedIn = await isSignedIn();
   return (
     <>
-      <PageHero eyebrow={t.pages.features.title} title={t.pages.features.heading} subtitle={t.pages.features.subtitle} />
-      <FeatureGrid t={t.features} index="01" />
-      <PanelShowcase t={t.panel} locale={locale} index="02" />
-      <Industries t={t.industries} index="03" />
+      <PageHero eyebrow={t.pages.features.title} title={t.pages.features.heading} subtitle={t.pages.features.subtitle} homeLabel={t.nav.home} />
+      <FeatureGrid t={t.features} />
+      <PanelShowcase t={t.panel} locale={locale} />
+      <Industries t={t.industries} />
       <CtaBand t={t.cta} signedIn={signedIn} dashboardLabel={t.nav.dashboard} />
     </>
   );

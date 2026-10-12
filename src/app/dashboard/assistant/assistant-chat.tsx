@@ -1,7 +1,6 @@
 "use client";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowUp, BrainCircuit, RotateCcw, ShieldCheck } from "lucide-react";
-import { Alert } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils/cn";
 
@@ -10,9 +9,9 @@ type StreamEvent =
   | { type: "text"; text: string }
   | { type: "tool"; name: string }
   | { type: "done" }
-  | { type: "error"; code: "refusal" | "failed" };
+  | { type: "error"; code: "failed" };
 
-export function AssistantChat({ shopId, shopName, configured }: { shopId: string; shopName: string; configured: boolean }) {
+export function AssistantChat({ shopId, shopName }: { shopId: string; shopName: string }) {
   const { t } = useI18n();
   const storageKey = `sotuv_assistant_${shopId}`;
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -70,7 +69,7 @@ export function AssistantChat({ shopId, shopName, configured }: { shopId: string
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
-        fail(res.status === 429 ? t.assistant.rateLimited : res.status === 503 ? t.assistant.notConfigured : t.assistant.failed);
+        fail(res.status === 429 ? t.assistant.rateLimited : t.assistant.failed);
         return;
       }
       const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
@@ -90,7 +89,7 @@ export function AssistantChat({ shopId, shopName, configured }: { shopId: string
           } else if (event.type === "tool") {
             setStatus("working");
           } else if (event.type === "error") {
-            fail(event.code === "refusal" ? t.assistant.refusal : t.assistant.failed);
+            fail(t.assistant.failed);
           }
         }
       }
@@ -131,15 +130,9 @@ export function AssistantChat({ shopId, shopName, configured }: { shopId: string
         )}
       </div>
 
-      {!configured && (
-        <Alert tone="warning" className="mb-5">
-          {t.assistant.notConfigured}
-        </Alert>
-      )}
-
       <div className="flex-1">
         {empty ? (
-          <div className="glass edge-glow fade-in p-6 sm:p-8">
+          <div className="glass fade-in p-6 sm:p-8">
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-fg text-page">
               <BrainCircuit className="h-6 w-6" />
             </span>
@@ -150,7 +143,7 @@ export function AssistantChat({ shopId, shopName, configured }: { shopId: string
                 <button
                   key={s}
                   type="button"
-                  disabled={!configured || busy}
+                  disabled={busy}
                   onClick={() => ask(s)}
                   className="rounded-2xl border border-line bg-glass px-4 py-3 text-left text-sm text-fg transition hover:bg-fg hover:text-page disabled:pointer-events-none disabled:opacity-50"
                 >
@@ -234,12 +227,11 @@ export function AssistantChat({ shopId, shopName, configured }: { shopId: string
             rows={1}
             maxLength={4000}
             placeholder={t.assistant.placeholder}
-            disabled={!configured}
             className="max-h-40 min-h-10 flex-1 resize-none bg-transparent py-2.5 text-[15px] text-fg [field-sizing:content] placeholder:text-subtle focus:outline-none disabled:opacity-60"
           />
           <button
             type="submit"
-            disabled={!configured || busy || !input.trim()}
+            disabled={busy || !input.trim()}
             aria-label={t.assistant.send}
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-fg text-page transition hover:opacity-90 disabled:opacity-35"
           >

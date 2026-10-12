@@ -38,7 +38,7 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="text-2xl font-bold tracking-tight text-fg sm:text-3xl">{title}</h1>
+        <h1 className="font-display text-2xl font-normal tracking-[-0.01em] text-fg sm:text-3xl">{title}</h1>
         {description && <p className="mt-1 text-sm text-muted sm:text-base">{description}</p>}
       </div>
       {action && <div className="flex flex-wrap gap-2">{action}</div>}

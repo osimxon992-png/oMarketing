@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
 import { ApiError, handler, parseJson } from "@/lib/api";
 import { hashPassword } from "@/lib/auth/password";
 import { clientIp, createSession } from "@/lib/auth/session";
@@ -28,7 +27,6 @@ export const POST = handler(async (req: Request) => {
       name: body.name,
       email: body.email,
       passwordHash: await hashPassword(body.password),
-      role: env().ADMIN_EMAILS.includes(body.email) ? "ADMIN" : "USER",
     },
   });
   await createSession(user.id);
