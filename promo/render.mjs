@@ -3,6 +3,7 @@
 //   FFMPEG=path/to/ffmpeg node promo/render.mjs                 → project-videos/omarketing-reklama.mp4
 //   FFMPEG=... node promo/render.mjs --audio promo/music.wav    → same, with a soundtrack
 //   node promo/render.mjs --stills 0.5,3.5,7                    → PNG stills only (no ffmpeg needed)
+//   node promo/render.mjs --page promo-clay.html ...            → render another page in this folder
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -14,6 +15,7 @@ const opt = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : unde
 const FPS = Number(opt("--fps") ?? 30);
 const stills = opt("--stills")?.split(",").map(Number);
 const audio = opt("--audio");
+const page = opt("--page") ?? "promo.html";
 const out = opt("--out") ?? path.join(here, "..", "project-videos", "omarketing-reklama.mp4");
 const CHROME = process.env.CHROME ?? "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const PORT = 9336;
@@ -48,7 +50,7 @@ const evaluate = async (expression) => (await send("Runtime.evaluate", { express
 
 await send("Emulation.setDeviceMetricsOverride", { width: 1080, height: 1920, deviceScaleFactor: 1, mobile: false });
 await send("Page.enable");
-await send("Page.navigate", { url: pathToFileURL(path.join(here, "promo.html")).href + "#render" });
+await send("Page.navigate", { url: pathToFileURL(path.join(here, page)).href + "#render" });
 for (let i = 0; i < 100 && !(await evaluate("typeof window.ready !== 'undefined'").catch(() => false)); i++) await sleep(100);
 await evaluate("window.ready");
 const duration = await evaluate("window.DURATION");

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>oMarketing clay promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Onest:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=block" rel="stylesheet">
+<style>
+  /* 1080×1920 vertical ad in the clay-collage world. Every frame is driven by window.seek(t). */
+  :root { --leaf:#1f5a2e; --leaf-deep:#163f21; --lime:#9ccc3c; --mango:#f4b62c; --guava:#ef6a37; --flor:#f08a9a; --anor:#c8323f; --paper:#efe3c8; --paper-hi:#f8f0dc; --charcoal:#1b1a17; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--leaf); }
+  body { font-family: "Onest", sans-serif; color: var(--charcoal); -webkit-font-smoothing: antialiased; }
+  .stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .scene { position: absolute; inset: 0; visibility: hidden; overflow: hidden; }
+  .abs { position: absolute; }
+  .display { font-family: "Dela Gothic One", sans-serif; letter-spacing: -0.01em; }
+  .mono { font-family: "JetBrains Mono", monospace; }
+
+  /* painted leaf-green acrylic */
+  .field { background-color: var(--leaf); background-image:
+    radial-gradient(ellipse 60% 40% at 85% 15%, rgba(156,204,60,.4), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 5% 92%, rgba(22,63,33,.95), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.09' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.6  0 0 0 0 0.8  0 0 0 0 0.25  0 0 0 0.24 0'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>"); }
+  .night { background-color: var(--leaf-deep); background-image:
+    radial-gradient(ellipse 50% 35% at 80% 12%, rgba(248,240,220,.16), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.09' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.55  0 0 0 0 0.2  0 0 0 0.3 0'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>"); }
+  .paper { background: var(--paper); }
+  .ink { background: var(--charcoal); }
+
+  /* a word rolled out of clay */
+  .slab { display: inline-block; padding: .06em .3em .1em; border-radius: .18em .26em .22em .16em; background: var(--s, var(--mango)); color: var(--charcoal);
+    box-shadow: inset 0 .05em .03em rgba(255,255,255,.5), inset 0 -.07em .08em rgba(0,0,0,.22), .06em .14em .3em -.04em rgba(0,0,0,.45); }
+  /* clay slab surface */
+  .clay { background: var(--paper-hi); border-radius: 44px;
+    box-shadow: inset 0 4px 2px rgba(255,255,255,.7), inset 0 -8px 12px rgba(110,80,30,.16), 14px 28px 50px -16px rgba(30,20,6,.5); }
+  /* clay ball with soft studio light */
+  .ball { position: absolute; border-radius: 50%; background:
+      radial-gradient(circle at 34% 28%, rgba(255,255,255,.55), rgba(255,255,255,0) 32%),
+      radial-gradient(circle at 70% 78%, rgba(0,0,0,.28), rgba(0,0,0,0) 55%), var(--c);
+    box-shadow: inset -20px -26px 44px rgba(0,0,0,.24), inset 12px 14px 24px rgba(255,255,255,.22), 26px 46px 60px -22px rgba(0,0,0,.5); }
+  .sepal { position: absolute; width: 46px; height: 92px; background: #a3242f; border-radius: 50% 50% 18% 18%;
+    box-shadow: inset -6px -8px 12px rgba(0,0,0,.25), inset 4px 4px 8px rgba(255,255,255,.2); transform-origin: 50% 100%; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 18px; border-radius: 30px; font-weight: 800;
+    box-shadow: inset 0 4px 2px rgba(255,255,255,.4), inset 0 -8px 12px rgba(0,0,0,.24), 10px 18px 30px -10px rgba(30,20,6,.55); }
+  .bubble { position: absolute; padding: 28px 34px; border-radius: 40px; font-size: 40px; line-height: 1.3; font-weight: 600;
+    box-shadow: inset 0 3px 2px rgba(255,255,255,.6), inset 0 -6px 10px rgba(0,0,0,.12), 10px 20px 34px -14px rgba(30,20,6,.45); }
+  .in { background: var(--paper); border-bottom-left-radius: 12px; }
+  .out { background: var(--lime); border-bottom-right-radius: 12px; }
+  .grain { position: absolute; inset: 0; opacity: .14; mix-blend-mode: multiply; pointer-events: none; z-index: 60;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.35  0 0 0 0 0.2  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- 1 · A message arrives at night -->
+  <section class="scene night" data-start="0" data-end="2.45" id="s1">
+    <div class="ball" id="s1-moon" style="--c:var(--paper-hi); width:230px; height:230px; right:110px; top:150px;"></div>
+    <div class="abs" id="s1-pom" style="left:-120px; bottom:-60px; width:620px; height:600px;">
+      <div class="ball" style="--c:var(--anor); width:600px; height:560px; left:0; top:40px;"></div>
+      <div class="sepal" style="left:250px; top:-10px; transform:rotate(-28deg);"></div>
+      <div class="sepal" style="left:282px; top:-26px;"></div>
+      <div class="sepal" style="left:314px; top:-10px; transform:rotate(28deg);"></div>
+    </div>
+    <div class="abs display" style="left:80px; top:430px; font-size:150px; line-height:1.18;">
+      <div><span class="slab" id="s1-w1" style="--s:var(--mango); transform:rotate(-3deg);">Kechasi</span></div>
+      <div><span class="slab" id="s1-w2" style="--s:var(--paper-hi); transform:rotate(2deg);">kelgan</span></div>
+      <div><span class="slab" id="s1-w3" style="--s:var(--flor); transform:rotate(-1.5deg);">xabarlar</span></div>
+    </div>
+    <div class="abs clay" id="s1-notif" style="left:110px; top:1010px; width:860px; padding:34px 38px; display:flex; gap:28px; align-items:center;">
+      <div class="ball" style="--c:var(--mango); position:relative; width:110px; height:110px; flex-shrink:0; display:grid; place-items:center;"><span class="display" style="font-size:52px;">N</span></div>
+      <div>
+        <div style="font-weight:800; font-size:36px;">Nafis Kiyim <span class="mono" style="font-size:28px; color:#4a4337; margin-left:10px;">02:14</span></div>
+        <div style="font-size:34px; margin-top:6px; color:#4a4337;">Assalomu alaykum, qora palto bormi? M razmer kerak</div>
+      </div>
+    </div>
+    <div class="abs" id="s1-cap" style="left:0; right:0; top:1340px; text-align:center;">
+      <span class="slab" style="--s:var(--charcoal); color:var(--paper-hi); font-weight:800; font-size:50px; transform:rotate(1deg);">ertalabgacha javobsiz qoladi?</span>
+    </div>
+  </section>
+
+  <!-- 2 · The promise -->
+  <section class="scene paper" data-start="2.4" data-end="5.15" id="s2">
+    <div class="abs" id="s2-grapes" style="right:-40px; top:120px; width:360px; height:420px;"></div>
+    <div class="abs" id="s2-coins" style="left:70px; bottom:170px; width:300px; height:300px;">
+      <div class="ball" style="--c:#e9b949; width:260px; height:110px; left:10px; top:170px; border-radius:50%;"></div>
+      <div class="ball" style="--c:#e9b949; width:260px; height:110px; left:30px; top:110px; border-radius:50%;"></div>
+      <div class="ball" style="--c:#e9b949; width:260px; height:110px; left:16px; top:50px; border-radius:50%;"></div>
+    </div>
+    <div class="abs display" style="left:70px; right:70px; top:560px; text-align:left; line-height:1.15;">
+      <div><span class="slab" id="s2-a" style="--s:var(--paper-hi); font-size:84px; transform:rotate(-1.5deg);">Do'koningiz uchun</span></div>
+      <div style="margin-top:22px;"><span class="slab" id="s2-b" style="--s:var(--lime); font-size:104px; transform:rotate(1.5deg);">hech qachon</span></div>
+      <div style="margin-top:18px;"><span class="slab" id="s2-c" style="--s:var(--mango); font-size:104px; transform:rotate(-1deg);">uxlamaydigan</span></div>
+      <div style="margin-top:22px;"><span class="slab" id="s2-d" style="--s:var(--guava); font-size:178px; transform:rotate(2deg);">sotuvchi</span></div>
+    </div>
+  </section>
+
+  <!-- 3 · The chat -->
+  <section class="scene field" data-start="5.1" data-end="8.75" id="s3">
+    <div class="abs clay" id="s3-phone" style="left:90px; top:200px; width:900px; height:1460px; overflow:hidden; border-radius:70px;">
+      <div style="background:var(--leaf); color:var(--paper-hi); padding:44px 48px; display:flex; gap:26px; align-items:center;">
+        <div class="ball" style="--c:var(--mango); position:relative; width:96px; height:96px; display:grid; place-items:center; box-shadow:none;"><span class="display" style="font-size:46px; color:var(--charcoal);">N</span></div>
+        <div><div style="font-weight:800; font-size:40px;">Nafis Kiyim</div><div style="font-size:30px; color:#e9f2d8;">● AI sotuvchi · onlayn</div></div>
+      </div>
+      <div class="bubble in" id="s3-m1" style="left:48px; top:230px; max-width:680px;">Assalomu alaykum, qora palto bormi? M razmer kerak</div>
+      <div class="bubble out" id="s3-typing" style="right:48px; top:520px; padding:30px 40px;">
+        <span id="s3-d1" style="display:inline-block; width:22px; height:22px; border-radius:50%; background:var(--charcoal); margin:0 6px;"></span><span id="s3-d2" style="display:inline-block; width:22px; height:22px; border-radius:50%; background:var(--charcoal); margin:0 6px;"></span><span id="s3-d3" style="display:inline-block; width:22px; height:22px; border-radius:50%; background:var(--charcoal); margin:0 6px;"></span>
+      </div>
+      <div class="bubble out" id="s3-m2" style="right:48px; top:520px; max-width:700px;">Va alaykum assalom! Ha, bor. Klassik qora palto, M razmer — omborda 3 dona qoldi.</div>
+    </div>
+    <div class="abs btn" id="s3-sticker" style="right:40px; top:1180px; padding:30px 40px; background:var(--mango); flex-direction:column; align-items:flex-start; gap:4px; transform:rotate(-4deg);">
+      <span style="font-size:44px;">Javob berildi</span><span class="mono" style="font-size:34px;">3 soniyada</span>
+    </div>
+  </section>
+
+  <!-- 4 · The order -->
+  <section class="scene paper" data-start="8.7" data-end="11.35" id="s4">
+    <div class="abs clay" id="s4-card" style="left:140px; top:260px; width:800px; overflow:hidden;">
+      <div style="height:560px; background:var(--flor); display:grid; place-items:center;">
+        <svg viewBox="0 0 120 80" width="520" height="350" fill="none"><path d="M48 10l12 8 12-8 18 8 10 22-12 4v30H32V44l-12-4 10-22z" fill="#1b1a17" stroke="#1b1a17" stroke-width="2" stroke-linejoin="round"/><path d="M60 18v56" stroke="#f08a9a" stroke-width="1.5" stroke-dasharray="3 4"/></svg>
+      </div>
+      <div style="padding:36px 44px; display:flex; justify-content:space-between; align-items:flex-end;">
+        <div><div class="display" style="font-size:50px; white-space:nowrap;">Klassik palto</div><div style="font-size:34px; color:#4a4337; margin-top:6px;">M · Qora · Jun 70%</div></div>
+        <div class="mono" style="font-size:36px; white-space:nowrap;">690 000 so'm</div>
+      </div>
+    </div>
+    <div class="abs btn" id="s4-order" style="left:110px; top:1080px; padding:34px 44px; background:var(--mango); transform:rotate(3deg);">
+      <span class="ball" style="--c:var(--charcoal); position:relative; width:90px; height:90px; display:grid; place-items:center; box-shadow:none;">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#f8f0dc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      </span>
+      <span style="display:flex; flex-direction:column; align-items:flex-start;"><span style="font-size:52px;">Yangi buyurtma #1042</span><span class="mono" style="font-size:40px;">715 000 so'm</span></span>
+    </div>
+    <div class="abs display" id="s4-cap" style="left:70px; right:70px; top:1440px; text-align:center; font-size:66px; line-height:1.3;">
+      <span class="slab" style="--s:var(--lime); transform:rotate(-1deg);">Buyurtmani o'zi rasmiylashtiradi</span>
+    </div>
+  </section>
+
+  <!-- 5 · The payment -->
+  <section class="scene field" data-start="11.3" data-end="13.85" id="s5">
+    <div class="bubble out" id="s5-msg" style="left:100px; right:100px; top:420px; font-size:52px; padding:44px 50px;">Tayyor! Buyurtma #1042. To'lov uchun havola:</div>
+    <div class="abs btn" id="s5-payme" style="left:100px; top:780px; width:420px; height:150px; background:var(--mango); font-size:52px;">Payme · To'lash</div>
+    <div class="abs btn" id="s5-click" style="right:100px; top:780px; width:420px; height:150px; background:var(--guava); font-size:52px;">Click · To'lash</div>
+    <div class="abs display" id="s5-cap" style="left:70px; right:70px; top:1120px; text-align:center; font-size:92px; line-height:1.25;">
+      <span class="slab" style="--s:var(--paper-hi); transform:rotate(1.5deg);">Payme va Click havolasi</span>
+    </div>
+    <div class="abs" id="s5-sub" style="left:110px; right:110px; top:1430px; text-align:center;">
+      <span class="slab" style="--s:var(--leaf-deep); color:var(--paper-hi); font-size:42px; font-weight:700; line-height:1.4; transform:rotate(-0.5deg);">Pul to'g'ridan-to'g'ri sizning hisobingizga tushadi.</span>
+    </div>
+  </section>
+
+  <!-- 6 · Three beats -->
+  <section class="scene ink" data-start="13.8" data-end="16.95" id="s6">
+    <div class="ball" id="s6-pom" style="--c:var(--anor); width:300px; height:280px; right:-60px; top:110px;"></div>
+    <div class="ball" id="s6-lime" style="--c:var(--lime); width:180px; height:180px; left:70px; bottom:170px;"></div>
+    <div class="abs display" style="left:0; right:0; top:470px; text-align:center; line-height:1.25;">
+      <div><span class="slab" id="s6-a" style="--s:var(--lime); font-size:190px; transform:rotate(-2deg);">Javob.</span></div>
+      <div style="margin-top:40px;"><span class="slab" id="s6-b" style="--s:var(--mango); font-size:150px; transform:rotate(1.5deg);">Buyurtma.</span></div>
+      <div style="margin-top:40px;"><span class="slab" id="s6-c" style="--s:var(--guava); font-size:190px; transform:rotate(-1deg);">To'lov.</span></div>
+    </div>
+  </section>
+
+  <!-- 7 · Outro -->
+  <section class="scene field" data-start="16.9" data-end="20.01" id="s7">
+    <div class="abs" id="s7-coin" style="left:390px; top:240px; width:300px; height:300px;">
+      <div class="ball" style="--c:var(--mango); width:300px; height:300px; display:grid; place-items:center;">
+        <svg viewBox="0 0 24 24" width="170" height="170" fill="none"><circle cx="11" cy="13" r="6" stroke="#1b1a17" stroke-width="3"/><path d="M15.5 6.5c1.2-2.2 3.3-3 5-2.6-.4 1.9-2.3 3.4-5 2.6Z" fill="#1f5a2e"/></svg>
+      </div>
+    </div>
+    <div class="abs display" style="left:0; right:0; top:640px; text-align:center; font-size:150px; line-height:1.2;">
+      <span class="slab" id="s7-o" style="--s:var(--paper-hi); transform:rotate(-6deg);">o</span>
+      <span class="slab" id="s7-mar" style="--s:var(--mango); transform:rotate(3deg);">MAR</span><br>
+      <span class="slab" id="s7-ke" style="--s:var(--flor); transform:rotate(-2deg);">KE</span>
+      <span class="slab" id="s7-ting" style="--s:var(--lime); transform:rotate(4deg);">TING</span>
+    </div>
+    <div class="abs" id="s7-tag" style="left:90px; right:90px; top:1110px; text-align:center;">
+      <span class="slab" style="--s:var(--leaf-deep); color:var(--paper-hi); font-size:46px; font-weight:700; line-height:1.4;">Telegram va Instagram do'konlar uchun AI sotuvchi.</span>
+    </div>
+    <div class="abs btn" id="s7-cta" style="left:150px; right:150px; top:1330px; height:170px; background:var(--mango); font-size:54px; white-space:nowrap;">7 kun bepul sinab ko'ring →</div>
+    <div class="abs" id="s7-trust" style="left:0; right:0; top:1580px; text-align:center; color:var(--paper-hi); font-size:36px; font-weight:700;">Karta talab qilinmaydi · 5 daqiqada ishga tushadi</div>
+  </section>
+
+  <!-- persistent clay watermark -->
+  <div class="abs btn" id="tag" style="left:50px; bottom:60px; z-index:45; padding:16px 30px 16px 16px; background:var(--paper-hi); border-radius:26px;">
+    <span class="ball" style="--c:var(--mango); position:relative; width:72px; height:72px; display:grid; place-items:center; box-shadow:none;">
+      <svg viewBox="0 0 24 24" width="40" height="40" fill="none"><circle cx="11" cy="13" r="6" stroke="#1b1a17" stroke-width="3"/><path d="M15.5 6.5c1.2-2.2 3.3-3 5-2.6-.4 1.9-2.3 3.4-5 2.6Z" fill="#1f5a2e"/></svg>
+    </span>
+    <span style="display:flex; flex-direction:column;"><span class="display" style="font-size:32px;"><span style="color:var(--anor)">o</span>Marketing</span><span style="font-size:22px; font-weight:600; color:#4a4337;">AI sotuvchi · Telegram · Instagram</span></span>
+  </div>
+
+  <div class="grain"></div>
+</div>
+
+<script>
+  const D = 20;
+  const ease = "cubic-bezier(.22,.9,.24,1)";
+  const easeIn = "cubic-bezier(.6,0,.9,.4)";
+  const pop = "cubic-bezier(.3,1.6,.5,1)";
+  const $ = (id) => document.getElementById(id);
+
+  /** Animate at `at` seconds for `dur`; entrances fill "both", follow-ups on the same element "forwards". */
+  function A(el, frames, at, dur, easing = ease, fill = "both") {
+    const a = (typeof el === "string" ? $(el) : el).animate(frames, { duration: dur * 1000, delay: at * 1000, fill, easing });
+    a.pause();
+    return a;
+  }
+  const rotOf = (id) => ($(id).style.transform.match(/rotate\([^)]*\)/) || ["rotate(0deg)"])[0];
+
+  /** Clay drop: falls in, squashes on landing, springs back. */
+  function drop(id, at, from = -1400, dur = 0.7) {
+    const r = rotOf(id);
+    A(id, [
+      { transform: `translateY(${from}px) ${r} scale(.95, 1.08)`, offset: 0 },
+      { transform: `translateY(0) ${r} scale(1.12, .84)`, offset: 0.55 },
+      { transform: `translateY(-30px) ${r} scale(.96, 1.05)`, offset: 0.78 },
+      { transform: `translateY(0) ${r} scale(1, 1)`, offset: 1 },
+    ], at, dur, "linear");
+  }
+  /** Clay paste: a slab presses onto the page with a squash. */
+  function paste(id, at, dur = 0.45) {
+    const r = rotOf(id);
+    A(id, [
+      { transform: `${r} scale(1.5)`, opacity: 0, offset: 0 },
+      { transform: `${r} scale(.92, .9)`, opacity: 1, offset: 0.6 },
+      { transform: `${r} scale(1.03)`, offset: 0.82 },
+      { transform: `${r} scale(1)`, offset: 1 },
+    ], at, dur, "linear");
+  }
+  /** New scene slides up over the previous one like a fresh sheet. */
+  const sheet = (id, at) => A(id, [{ transform: "translateY(105%) rotate(5deg)" }, { transform: "translateY(0) rotate(0)" }], at, 0.42, ease);
+  /** Idle bob so nothing on screen is ever frozen. */
+  const bob = (id, at, dur, amp = 14) => {
+    const r = rotOf(id);
+    A(id, [{ transform: `translateY(0) ${r}` }, { transform: `translateY(${-amp}px) ${r}` }, { transform: `translateY(0) ${r}` }], at, dur, "ease-in-out", "forwards");
+  };
+
+  // grapes cluster for scene 2 (generated, all clay balls)
+  (() => {
+    const host = $("s2-grapes");
+    const rows = [4, 4, 3, 3, 2, 1];
+    rows.forEach((n, r) => {
+      for (let i = 0; i < n; i++) {
+        const b = document.createElement("div");
+        b.className = "ball";
+        b.style.cssText = `--c:${(i + r) % 3 ? "#a7c84a" : "#8db53a"}; width:92px; height:92px; left:${40 + (i - (n - 1) / 2) * 76 + 130 + (r % 2) * 14}px; top:${60 + r * 62}px;`;
+        host.appendChild(b);
+      }
+    });
+  })();
+
+  // ── 1 · night message (impact 0.15, riser 1.3–2.25)
+  A("s1-moon", [{ transform: "translateY(-400px)" }, { transform: "translateY(0)" }], 0, 0.6, ease);
+  drop("s1-pom", 0.15, 900, 0.75);
+  paste("s1-w1", 0.4);
+  paste("s1-w2", 0.62);
+  paste("s1-w3", 0.84);
+  A("s1-notif", [{ transform: "translateY(-260px) rotate(-3deg)", opacity: 0 }, { transform: "translateY(0) rotate(-1deg)", opacity: 1 }], 1.05, 0.45, pop);
+  paste("s1-cap", 1.6, 0.5);
+  A("s1-cap", [{ transform: "translateX(0)" }, { transform: "translateX(-14px)" }, { transform: "translateX(14px)" }, { transform: "translateX(-8px)" }, { transform: "translateX(0)" }], 2.05, 0.3, "linear", "forwards");
+
+  // ── 2 · the promise (pops 3.25 / 3.67 / 4.09)
+  sheet("s2", 2.4);
+  A("s2-grapes", [{ transform: "translateX(500px) rotate(20deg)" }, { transform: "translateX(0) rotate(-6deg)" }], 2.55, 0.6, pop);
+  drop("s2-coins", 2.7, -1000, 0.6);
+  paste("s2-a", 2.95);
+  paste("s2-b", 3.25);
+  paste("s2-c", 3.67);
+  paste("s2-d", 4.09, 0.55);
+  bob("s2-grapes", 3.2, 1.9, 18);
+
+  // ── 3 · the chat (pop 5.65, ticks 6.05–6.29, reply 6.9, sticker 7.2)
+  sheet("s3", 5.1);
+  A("s3-phone", [{ transform: "translateY(200px) rotate(3deg) scale(.94)" }, { transform: "translateY(0) rotate(0) scale(1)" }], 5.15, 0.5, ease);
+  A("s3-m1", [{ transform: "scale(.4)", opacity: 0, transformOrigin: "0% 100%" }, { transform: "scale(1)", opacity: 1, transformOrigin: "0% 100%" }], 5.62, 0.35, pop);
+  A("s3-typing", [{ transform: "scale(.4)", opacity: 0, transformOrigin: "100% 100%" }, { transform: "scale(1)", opacity: 1, transformOrigin: "100% 100%" }], 5.95, 0.25, pop);
+  ["s3-d1", "s3-d2", "s3-d3"].forEach((id, i) =>
+    A(id, [{ transform: "translateY(0)" }, { transform: "translateY(-14px)" }, { transform: "translateY(0)" }], 6.05 + i * 0.12, 0.3, "ease-in-out"),
+  );
+  A("s3-typing", [{ opacity: 1 }, { opacity: 0 }], 6.82, 0.08, "linear", "forwards");
+  A("s3-m2", [{ transform: "scale(.4)", opacity: 0, transformOrigin: "100% 100%" }, { transform: "scale(1)", opacity: 1, transformOrigin: "100% 100%" }], 6.88, 0.35, pop);
+  drop("s3-sticker", 7.15, -700, 0.55);
+  bob("s3-sticker", 7.8, 0.9, 10);
+
+  // ── 4 · the order (whoosh 9.75)
+  sheet("s4", 8.7);
+  A("s4-card", [{ transform: "translateX(-1100px) rotate(-8deg)" }, { transform: "translateX(0) rotate(-1.5deg)" }], 8.8, 0.6, pop);
+  A("s4-order", [{ transform: "translateX(1200px) rotate(10deg)" }, { transform: "translateX(-20px) rotate(2deg)", offset: 0.8 }, { transform: "translateX(0) rotate(3deg)" }], 9.6, 0.55, ease);
+  paste("s4-cap", 10.15, 0.5);
+  bob("s4-card", 9.5, 1.8, 10);
+
+  // ── 5 · the payment (pops 12.3 / 12.55)
+  sheet("s5", 11.3);
+  A("s5-msg", [{ transform: "scale(.5)", opacity: 0, transformOrigin: "100% 100%" }, { transform: "scale(1)", opacity: 1, transformOrigin: "100% 100%" }], 11.5, 0.4, pop);
+  drop("s5-payme", 12.25, -900, 0.5);
+  drop("s5-click", 12.5, -900, 0.5);
+  A("s5-payme", [{ transform: "scale(1)" }, { transform: "scale(.94, .88)" }, { transform: "scale(1)" }], 13.1, 0.3, "ease-in-out", "forwards");
+  paste("s5-cap", 12.75, 0.5);
+  paste("s5-sub", 13.05, 0.45);
+
+  // ── 6 · three beats (impacts 14.05 / 15.0 / 15.95)
+  A("s6", [{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(150% at 50% 50%)" }], 13.8, 0.5, ease);
+  drop("s6-a", 14.0, -1200, 0.5);
+  drop("s6-b", 14.95, -1200, 0.5);
+  drop("s6-c", 15.9, -1200, 0.5);
+  A("s6-pom", [{ transform: "translateY(-600px) rotate(-30deg)" }, { transform: "translateY(0) rotate(0)" }], 13.95, 0.6, pop);
+  A("s6-lime", [{ transform: "translateY(600px)" }, { transform: "translateY(0)" }], 14.9, 0.5, pop);
+
+  // ── 7 · outro (impact 16.95)
+  sheet("s7", 16.9);
+  drop("s7-coin", 16.92, -1000, 0.7);
+  paste("s7-o", 17.25);
+  paste("s7-mar", 17.38);
+  paste("s7-ke", 17.51);
+  paste("s7-ting", 17.64);
+  paste("s7-tag", 17.95, 0.5);
+  drop("s7-cta", 18.3, 900, 0.6);
+  A("s7-cta", [{ transform: "scale(1)" }, { transform: "scale(1.05)" }, { transform: "scale(1)" }], 19.0, 0.8, "ease-in-out", "forwards");
+  A("s7-trust", [{ opacity: 0, transform: "translateY(30px)" }, { opacity: 1, transform: "translateY(0)" }], 18.7, 0.5);
+  A("s7-coin", [{ transform: "rotate(0deg)" }, { transform: "rotate(-10deg)" }, { transform: "rotate(0deg)" }], 17.8, 2.2, "ease-in-out", "forwards");
+
+  // Watermark on the middle scenes only (the opener and the outro carry the brand themselves).
+  A("tag", [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "translateY(0)" }], 2.6, 0.4);
+  A("tag", [{ opacity: 1 }, { opacity: 0 }], 16.7, 0.2, "linear", "forwards");
+
+  const scenes = [...document.querySelectorAll(".scene")].map((el) => ({ el, s: +el.dataset.start, e: +el.dataset.end }));
+  window.seek = (t) => {
+    for (const sc of scenes) sc.el.style.visibility = t >= sc.s && t < sc.e ? "visible" : "hidden";
+    for (const a of document.getAnimations()) a.currentTime = t * 1000;
+  };
+  window.DURATION = D;
+  window.ready = document.fonts.ready.then(() => (seek(0), true));
+
+  // Preview: open the file in a browser and it plays in real time.
+  if (!navigator.webdriver && location.hash !== "#render") {
+    const t0 = performance.now();
+    const loop = () => { seek(((performance.now() - t0) / 1000) % D); requestAnimationFrame(loop); };
+    window.ready.then(() => requestAnimationFrame(loop));
+  }
+</script>
+</body>
+</html>
